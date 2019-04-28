@@ -34,6 +34,18 @@
     "githubUrl": "https://github.com/Wobbly-App/wobbly-frontend",
     "extra": {
       "backendUrl": "http://develop.wobbly.app"
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "wobbly",
+            "project": "wobbly-frontend",
+            "authToken": ""
+          }
+        }
+      ]
     }
   }
 }

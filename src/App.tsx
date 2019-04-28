@@ -7,9 +7,11 @@ import { createHttpLink } from "apollo-link-http";
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
 import { Font, SecureStore } from "expo";
+import jwtDecode from "jwt-decode";
 import * as React from "react";
 import { ApolloProvider } from "react-apollo";
 import { NavigationContainerComponent } from "react-navigation";
+import SentryExpo from "sentry-expo";
 import { parse } from "url";
 
 import AppNavigation from "./AppNavigation";
@@ -33,6 +35,7 @@ export default class App extends React.Component<{}, IAppState> {
   }
 
   public async componentDidMount() {
+    await this.initSentry();
     await this.initClient();
     await this.initFonts();
   }
@@ -61,6 +64,20 @@ export default class App extends React.Component<{}, IAppState> {
         </OwnInfoQuery>
       </ApolloProvider>
     );
+  }
+
+  private async initSentry() {
+    if (!config.sentryDsn) {
+      return;
+    }
+    // SentryExpo.enableInExpoDevelopment = true;
+    SentryExpo.config(config.sentryDsn).install();
+    const authToken = await SecureStore.getItemAsync("token");
+    if (!authToken) {
+      return;
+    }
+    const decodedJwt = jwtDecode<{ personId: string }>(authToken);
+    SentryExpo.setUserContext({ id: decodedJwt.personId });
   }
 
   private async initClient() {

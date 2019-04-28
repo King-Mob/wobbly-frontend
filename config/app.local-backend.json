@@ -33,6 +33,18 @@
     "description": "Wobbly is a workplace organising platform. We’re creating a space for energetic, powerful, and democratic unions to win struggles and grow.",
     "githubUrl": "https://github.com/Wobbly-App/wobbly-frontend",
     "extra": {
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "wobbly",
+            "project": "wobbly-frontend",
+            "authToken": ""
+          }
+        }
+      ]
     }
   }
 }

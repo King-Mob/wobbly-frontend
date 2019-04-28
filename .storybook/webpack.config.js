@@ -33,7 +33,7 @@ module.exports = ({ config }) => {
 
   config.resolve.extensions.unshift(".web.js", ".ts", ".tsx");
 
-  // Aials incompatible modules with either a react-native-web compatible shim,
+  // Alias incompatible modules with either a react-native-web compatible shim,
   // or a stub module where none exists
   config.resolve.alias = {
     ...(config.resolve && config.resolve.alias),
@@ -44,7 +44,8 @@ module.exports = ({ config }) => {
     "react-native-vector-icons/AntDesign": require.resolve("./stubs/empty-module.ts"),
     "react-native-svg": require.resolve("react-native-svg-web"),
     "react-native-video": require.resolve("./stubs/react-native-video.tsx"),
-    "react-navigation": require.resolve("@react-navigation/core")
+    "react-navigation": require.resolve("@react-navigation/core"),
+    "sentry-expo": require.resolve("./stubs/empty-module.ts")
   };
 
   return config;

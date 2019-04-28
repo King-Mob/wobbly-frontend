@@ -2,8 +2,10 @@ import { Formik, FormikProps } from "formik";
 import { get } from "lodash";
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
+import SentryExpo from "sentry-expo";
 import * as yup from "yup";
 
+import { GENERIC_ERROR_TEXT } from "../../constants";
 import {
   UPDATE_PERSON_MUTATION,
   UpdatePersonMutation,
@@ -121,7 +123,11 @@ class UpdatePersonForm extends React.Component<IUpdatePersonFormProps> {
         this.toast.show("update successful");
       })
       .catch(e => {
-        const error = get(e, "graphQLErrors[0].message", "An error occurred");
+        let error = get(e, "graphQLErrors[0].message");
+        if (!error) {
+          error = GENERIC_ERROR_TEXT;
+          SentryExpo.captureException(e);
+        }
         this.updatePersonForm!.setErrors({ name: error });
         this.toast.show(error);
       });

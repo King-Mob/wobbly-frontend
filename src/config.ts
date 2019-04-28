@@ -5,6 +5,7 @@ import url from "url";
 export const config = {
   // default values unless overridden by app.json
   backendUrl: getPackagerBaseUrl() + ":4000",
+  sentryDsn: "",
 
   // values specified in expo.extra field of app.json
   ...Constants.manifest.extra

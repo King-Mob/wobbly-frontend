@@ -3,6 +3,7 @@ import hoistNonReactStatics from "hoist-non-react-statics";
 import * as React from "react";
 import HeaderButtons from "react-navigation-header-buttons";
 
+import { GENERIC_ERROR_TEXT } from "../../constants";
 import { GROUPS_QUERY, GroupsQuery, GroupsQueryResult } from "../../graphql/queries";
 import { createNavigatorFunction } from "../../util";
 import { NonIdealState, WobblyHeaderButtons } from "../molecules";
@@ -30,7 +31,7 @@ class GroupsListScreen extends React.PureComponent<IGroupsListScreenProps> {
     if (result.loading) {
       return <LoadingState />;
     } else if (result.error) {
-      return <ErrorState title="An error occurred" subtitle={result.error.message} />;
+      return <ErrorState title={GENERIC_ERROR_TEXT} subtitle={result.error.message} />;
     }
 
     const groups = result.data && result.data.groups;
