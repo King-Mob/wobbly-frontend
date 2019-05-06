@@ -91,7 +91,7 @@
     "@emotion/core": "^10.0.10",
     "@storybook/addon-actions": "^5.0.8",
     "@storybook/addon-console": "^1.1.0",
-    "@storybook/react": "^5.0.8",
+    "@storybook/react": "^5.0.11",
     "@types/expo": "^32.0.10",
     "@types/expo__vector-icons": "^9.0.1",
     "@types/graphql": "^14.2.0",
