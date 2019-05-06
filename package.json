@@ -114,7 +114,7 @@
     "babel-loader": "^8.0.5",
     "babel-preset-expo": "^5.1.1",
     "babel-preset-react-native": "^4.0.1",
-    "danger": "^7.1.2",
+    "danger": "^7.1.4",
     "dotenv-cli": "^2.0.0",
     "emotion-theming": "^10.0.10",
     "expo-web": "^0.0.14",
