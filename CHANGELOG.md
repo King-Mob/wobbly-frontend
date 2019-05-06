@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add [danger](https://danger.systems/js/)
 - Set up error reporting with Sentry
+- Set up push notifications
 
 ## [0.0.1-alpha.1] - 2019-04-11
 ### Added
