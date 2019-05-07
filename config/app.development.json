@@ -20,7 +20,8 @@
     "assetBundlePatterns": ["assets/*"],
     "android": {
       "package": "app.wobbly.frontend",
-      "versionCode": 2
+      "versionCode": 2,
+      "googleServicesFile": "./google-services.json"
     },
     "ios": {
       "supportsTablet": false

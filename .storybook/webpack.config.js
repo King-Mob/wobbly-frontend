@@ -5,7 +5,7 @@ module.exports = async ({ config }) => {
   // Set globals
   config.plugins.push(
     new webpack.DefinePlugin({
-      __DEV__: false
+      __DEV__: true // webpack is only used to build tests, so this should always be true
     })
   );
 
