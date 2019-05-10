@@ -5,7 +5,8 @@ set -e
 jq --help > /dev/null
 
 # make sure we're on the develop branch
-branch=$(git rev-parse --abbrev-ref HEAD)
+# https://graysonkoonce.com/getting-the-current-branch-name-during-a-pull-request-in-travis-ci/
+branch=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 if [[ "$branch" != "develop" ]]; then
   echo "Attempted to deploy to alpha channel, yet not on develop branch. Stopping.";
   exit 1;
