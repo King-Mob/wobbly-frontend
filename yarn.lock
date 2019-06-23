@@ -2369,10 +2369,10 @@
   resolved "https://registry.yarnpkg.com/@types/websql/-/websql-0.0.27.tgz#621a666a7f02018e7cbb4abab956a25736c27d71"
   integrity sha1-Yhpman8CAY58u0q6uVaiVzbCfXE=
 
-"@types/yup@^0.26.12":
-  version "0.26.12"
-  resolved "https://registry.yarnpkg.com/@types/yup/-/yup-0.26.12.tgz#60fc1a485923a929699d2107fac46e6769707c4a"
-  integrity sha512-lWCsvLer6G84Gj7yh+oFGRuGHsqZd1Dwu47CVVL0ATw+bOnGDgMNHbTn80p1onT66fvLfN8FnRA3eRANsnnbbQ==
+"@types/yup@^0.26.16":
+  version "0.26.16"
+  resolved "https://registry.yarnpkg.com/@types/yup/-/yup-0.26.16.tgz#75c428236207c48d9f8062dd1495cda8c5485a15"
+  integrity sha512-E2RNc7DSeQ+2EIJ1H3+yFjYu6YiyQBUJ7yNpIxomrYJ3oFizLZ5yDS3T1JTUNBC2OCRkgnhLS0smob5UuCHfNA==
 
 "@types/zen-observable@^0.8.0":
   version "0.8.0"
