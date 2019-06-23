@@ -15,6 +15,7 @@ Wobbly is an app for workplace organizing. See [wobbly.app](https://wobbly.app) 
 * Run `yarn start`. You can preview and live reload the app in an Android/iOS emulator or on your device using the Expo app.
   * See the "Connecting to the backend" section below for more details
 * Optional: Run `yarn storybook` for a web-based [storybook](https://storybook.js.org) environment
+* Running into issues? See the [dev environment setup](https://wiki.wobbly.app/index.php/Development_environment_setup) page on our wiki.
 
 ## 🌐 Connecting to the backend
 Our [backend](https://github.com/Wobbly-App/graphql-backend) exposes a GraphQL API.
