@@ -6,7 +6,6 @@ import * as React from "react";
 import { SafeAreaView } from "react-native";
 import { Button } from "react-native-elements";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { NavigationInjectedProps } from "react-navigation";
 import * as yup from "yup";
 
 import {
@@ -15,7 +14,13 @@ import {
   UpdateGroupMutationFn,
   UpdateGroupMutationResult
 } from "../../graphql/mutations";
-import { GROUP_DETAILS_QUERY, GroupDetailsQuery, GroupDetailsQueryResult } from "../../graphql/queries";
+import {
+  CURRENT_GROUP_ID_QUERY,
+  CurrentGroupIdQuery,
+  GROUP_DETAILS_QUERY,
+  GroupDetailsQuery,
+  GroupDetailsQueryResult
+} from "../../graphql/queries";
 import { NavigationService } from "../../services";
 import { FormErrors, FormField, FormLabel, WobblyButton } from "../atoms";
 import { Intent } from "../atoms/WobblyButton";
@@ -25,10 +30,11 @@ interface IEditGroupDescriptionFormFields {
   description: string;
 }
 
-interface IEditGroupDescriptionProps extends NavigationInjectedProps {
+interface IEditGroupDescriptionProps {
   groupDetails: GroupDetailsQueryResult;
   updateGroup: UpdateGroupMutationFn;
   updateGroupResult: UpdateGroupMutationResult;
+  groupId: string;
 }
 
 class EditGroupDescriptionModal extends React.Component<IEditGroupDescriptionProps> {
@@ -85,7 +91,7 @@ class EditGroupDescriptionModal extends React.Component<IEditGroupDescriptionPro
     this.props
       .updateGroup({
         variables: {
-          groupId: this.props.navigation.getParam("groupId"),
+          groupId: this.props.groupId,
           name: this.props.groupDetails.data!.group!.name,
           description: vals.description
         }
@@ -101,20 +107,27 @@ class EditGroupDescriptionModal extends React.Component<IEditGroupDescriptionPro
   };
 }
 
-const EnhancedComponent = ({ navigation }: NavigationInjectedProps) => (
-  <GroupDetailsQuery query={GROUP_DETAILS_QUERY} variables={{ groupId: navigation.getParam("groupId") }}>
-    {groupDetails => (
-      <UpdateGroupMutation mutation={UPDATE_GROUP_MUTATION} variables={{ groupId: navigation.getParam("groupId") }}>
-        {(updateGroup, updateGroupResult) => (
-          <EditGroupDescriptionModal
-            groupDetails={groupDetails}
-            updateGroup={updateGroup}
-            updateGroupResult={updateGroupResult}
-            navigation={navigation}
-          />
-        )}
-      </UpdateGroupMutation>
-    )}
-  </GroupDetailsQuery>
+const EnhancedComponent = () => (
+  <CurrentGroupIdQuery query={CURRENT_GROUP_ID_QUERY}>
+    {currentGroupId => {
+      const groupId = currentGroupId.data!.currentGroupId!;
+      return (
+        <GroupDetailsQuery query={GROUP_DETAILS_QUERY} variables={{ groupId }}>
+          {groupDetails => (
+            <UpdateGroupMutation mutation={UPDATE_GROUP_MUTATION} variables={{ groupId }}>
+              {(updateGroup, updateGroupResult) => (
+                <EditGroupDescriptionModal
+                  groupDetails={groupDetails}
+                  updateGroup={updateGroup}
+                  updateGroupResult={updateGroupResult}
+                  groupId={groupId}
+                />
+              )}
+            </UpdateGroupMutation>
+          )}
+        </GroupDetailsQuery>
+      );
+    }}
+  </CurrentGroupIdQuery>
 );
 export default hoistNonReactStatics(EnhancedComponent, EditGroupDescriptionModal);

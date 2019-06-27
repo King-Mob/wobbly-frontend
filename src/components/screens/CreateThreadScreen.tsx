@@ -5,7 +5,6 @@ import { values } from "lodash";
 import * as React from "react";
 import { Button } from "react-native-elements";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { NavigationInjectedProps } from "react-navigation";
 import * as yup from "yup";
 
 import { getThreads } from "../../generated/getThreads";
@@ -16,7 +15,7 @@ import {
   CreateThreadMutationResult,
   CreateThreadMutationUpdaterFn
 } from "../../graphql/mutations";
-import { THREADS_QUERY } from "../../graphql/queries";
+import { CURRENT_GROUP_ID_QUERY, CurrentGroupIdQuery, THREADS_QUERY } from "../../graphql/queries";
 import { NavigationService } from "../../services";
 import { FormErrors, FormField, FormLabel, WobblyButton } from "../atoms";
 import { Intent } from "../atoms/WobblyButton";
@@ -25,9 +24,10 @@ interface ICreateThreadFormFields {
   title: string;
   content: string;
 }
-interface ICreateThreadScreenProps extends NavigationInjectedProps {
+interface ICreateThreadScreenProps {
   createThread: CreateThreadMutationFn;
   result: CreateThreadMutationResult;
+  groupId: string;
 }
 class CreateThreadScreen extends React.Component<ICreateThreadScreenProps> {
   public static navigationOptions = {
@@ -79,8 +79,7 @@ class CreateThreadScreen extends React.Component<ICreateThreadScreenProps> {
   }
 
   private handleCreateThread = (vals: ICreateThreadFormFields) => {
-    const groupId = this.props.navigation.getParam("groupId", "");
-    const groupName = this.props.navigation.getParam("groupName", "");
+    const groupId = this.props.groupId;
     this.props
       .createThread({
         variables: {
@@ -90,7 +89,7 @@ class CreateThreadScreen extends React.Component<ICreateThreadScreenProps> {
         }
       })
       .then(() => {
-        NavigationService.navigate("ThreadsList", { groupId, groupName });
+        NavigationService.navigate("ThreadsList");
       })
       .catch((e: ApolloError) => {
         if (e && e.graphQLErrors) {
@@ -111,11 +110,18 @@ const getUpdateCacheFn = (groupId: string): CreateThreadMutationUpdaterFn => (ca
   });
 };
 
-const EnhancedComponent = ({ navigation }: NavigationInjectedProps) => (
-  <CreateThreadMutation mutation={CREATE_THREAD_MUTATION} update={getUpdateCacheFn(navigation.getParam("groupId"))}>
-    {(createThread, result) => (
-      <CreateThreadScreen createThread={createThread} result={result} navigation={navigation} />
-    )}
-  </CreateThreadMutation>
+const EnhancedComponent = () => (
+  <CurrentGroupIdQuery query={CURRENT_GROUP_ID_QUERY}>
+    {currentGroupId => {
+      const groupId = currentGroupId.data!.currentGroupId!;
+      return (
+        <CreateThreadMutation mutation={CREATE_THREAD_MUTATION} update={getUpdateCacheFn(groupId)}>
+          {(createThread, result) => (
+            <CreateThreadScreen createThread={createThread} result={result} groupId={groupId} />
+          )}
+        </CreateThreadMutation>
+      );
+    }}
+  </CurrentGroupIdQuery>
 );
 export default hoistNonReactStatics(EnhancedComponent, CreateThreadScreen);

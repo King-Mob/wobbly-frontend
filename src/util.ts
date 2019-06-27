@@ -19,6 +19,12 @@ export const createNavigatorFunction = (route: string, params?: any): (() => voi
   };
 };
 
+export const switchCurrentGroup = (groupId: string, groupName: string) => {
+  client.writeData({ data: { currentGroupId: groupId } });
+  NavigationService.navigate("ThreadsList", { groupId, groupName });
+  NavigationService.closeDrawer();
+};
+
 /**
  * Saves the auth token to secure storage
  * @param token the JWT

@@ -9,6 +9,7 @@ import { SecureStore } from "expo";
 import { parse } from "url";
 
 import { config } from "./config";
+import { resolvers, typeDefs } from "./graphql/resolvers";
 
 export let client: ApolloClient<any>;
 
@@ -48,6 +49,8 @@ export const initClient = async () => {
 
   client = new ApolloClient({
     link: allLinks,
-    cache: new InMemoryCache({ addTypename: true })
+    cache: new InMemoryCache({ addTypename: true }),
+    typeDefs,
+    resolvers
   });
 };

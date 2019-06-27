@@ -6,6 +6,9 @@ src/generated/
 # expo
 .expo/
 
+# vscode debug cache
+.vscode/.react/
+
 # dependencies
 /node_modules
 

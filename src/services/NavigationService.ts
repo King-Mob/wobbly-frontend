@@ -1,7 +1,7 @@
 /**
  * From https://reactnavigation.org/docs/en/navigating-without-navigation-prop.html#docsNav
  */
-import { NavigationActions, NavigationContainerComponent, NavigationParams } from "react-navigation";
+import { DrawerActions, NavigationActions, NavigationContainerComponent, NavigationParams } from "react-navigation";
 
 let navigator: NavigationContainerComponent | null;
 
@@ -21,6 +21,20 @@ function navigate(routeName: string, params?: NavigationParams) {
   );
 }
 
+function openDrawer() {
+  if (!navigator) {
+    throw new Error("Could not open drawer; navigator was not initialized");
+  }
+  navigator.dispatch(DrawerActions.openDrawer());
+}
+
+function closeDrawer() {
+  if (!navigator) {
+    throw new Error("Could not close drawer; navigator was not initialized");
+  }
+  navigator.dispatch(DrawerActions.closeDrawer());
+}
+
 function goBack() {
   if (!navigator) {
     throw new Error("Could not navigate; navigator was not initialized");
@@ -31,5 +45,7 @@ function goBack() {
 export default {
   navigate,
   goBack,
-  setTopLevelNavigator
+  setTopLevelNavigator,
+  openDrawer,
+  closeDrawer
 };

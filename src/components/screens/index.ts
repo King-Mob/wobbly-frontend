@@ -1,5 +1,4 @@
 export { default as AccountScreen } from "./AccountScreen";
-export { default as GroupsListScreen } from "./GroupsListScreen";
 export { default as SplashScreen } from "./SplashScreen";
 export { default as CreateGroupScreen } from "./CreateGroupScreen";
 export { default as SearchGroupsModal } from "./SearchGroupsModal";

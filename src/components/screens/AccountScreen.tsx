@@ -2,6 +2,7 @@ import { SecureStore } from "expo";
 import * as React from "react";
 import { withApollo, WithApolloClient } from "react-apollo";
 import { ScrollView, StyleSheet, View } from "react-native";
+import { Button } from "react-native-elements";
 import HeaderButtons from "react-navigation-header-buttons";
 
 import { NavigationService } from "../../services";
@@ -24,6 +25,7 @@ class AccountScreen extends React.Component<IAccountScreenProps, IAccountScreenS
     const navigateToSettings = createNavigatorFunction("Settings");
     return {
       title: "Account",
+      headerLeft: <Button type="clear" title="Close" onPress={NavigationService.goBack} />,
       headerRight: (
         <WobblyHeaderButtons>
           <HeaderButtons.Item title="Settings" iconName="settings" onPress={navigateToSettings} />

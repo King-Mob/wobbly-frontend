@@ -16,4 +16,5 @@ const ErrorState: React.FC<IErrorStateProps> = ({ title, subtitle }) => (
     iconName="error-outline"
   />
 );
+
 export default ErrorState;
