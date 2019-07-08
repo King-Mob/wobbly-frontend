@@ -1,0 +1,22 @@
+version: 1
+update_configs:
+  - package_manager: javascript
+    directory: "/"
+    update_schedule: "weekly"
+    ignored_updates:
+      - match:
+          dependency_name: "react-native"
+      - match:
+          dependency_name: "sentry-expo"
+          version_requirement: "~1.13.0"
+      - match:
+          dependency_name: "jest-expo"
+          version_requirement: "^33.0.0"
+      - match:
+          dependency_name: "react-navigation"
+          version_requirement: "^3.11.0"
+    automerged_updates:
+      - match:
+          dependency_type: "all"
+          update_type: "semver:patch"
+
