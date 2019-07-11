@@ -17,6 +17,7 @@ script:
   - yarn lint
   - yarn test:snapshot --requireReference
 deploy:
+  skip_cleanup: true
   provider: script
   script: bash scripts/deploy-alpha.sh
   on:
