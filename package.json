@@ -108,7 +108,7 @@
     "@types/storybook__addon-actions": "^3.4.2",
     "@types/storybook__react": "^4.0.1",
     "@types/yup": "^0.26.17",
-    "apollo": "^2.8.3",
+    "apollo": "^2.15.0",
     "apollo-link-schema": "^1.2.2",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.5",
