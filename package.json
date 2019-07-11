@@ -105,7 +105,7 @@
     "@types/react-native": "^0.57.51",
     "@types/react-native-keyboard-spacer": "^0.4.1",
     "@types/react-test-renderer": "^16.0.3",
-    "@types/storybook__addon-actions": "^3.4.2",
+    "@types/storybook__addon-actions": "^3.4.3",
     "@types/storybook__react": "^4.0.1",
     "@types/yup": "^0.26.17",
     "apollo": "^2.15.0",
