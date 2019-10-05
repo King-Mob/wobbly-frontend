@@ -11,11 +11,16 @@ Wobbly is an app for workplace organizing. See [wobbly.app](https://wobbly.app) 
 * Clone this repo: `git clone git@github.com:Wobbly-App/wobbly-frontend.git`
 * `cd` into the repo and run `yarn install` to get dependencies
 * Run `yarn codegen` to automatically generate the TypeScript typings for our GraphQL client
+* Copy one of the example configurations from `config` to `app.json` in the repository root. Eg: `cp config/app.development.json app.json`
 * Run `yarn start`. You can preview and live reload the app in an Android/iOS emulator or on your device using the Expo app.
+  * See the "Connecting to the backend" section below for more details
 * Optional: Run `yarn storybook` for a web-based [storybook](https://storybook.js.org) environment
+* Running into issues? See the [dev environment setup](https://wiki.wobbly.app/index.php/Development_environment_setup) page on our wiki.
 
 ## 🌐 Connecting to the backend
-Our [backend](https://github.com/Wobbly-App/graphql-backend) exposes a GraphQL API. In `App.tsx`, set the IP of the backend stack you want to connect to.
+Our [backend](https://github.com/Wobbly-App/graphql-backend) exposes a GraphQL API.
+* Running `yarn start` will connect to the GraphQL backend specified in your app.json.
+* If you want to run against a local backend, remove the `backendUrl` field from your app.json (or use the provided example configuration). This is the default behaviour if no backend configuration is provided.
 
 ## 🔥 Testing
 We use [loki](https://loki.js.org/) to run visual regression tests against our storybook. The general workflow for these are:
@@ -23,6 +28,12 @@ We use [loki](https://loki.js.org/) to run visual regression tests against our s
 * `yarn test` 
 * If the tests fail due to a visual change, check the contents of [./loki/difference](./loki/difference). If you are happy with all the changes, run `yarn loki approve` to update the reference screens.
 * If the test fail on CI and you think they should have passed, check the travis logs for a link to a url hosting diffs between the current and reference snapshots
+
+## 🚀 Deploying
+* `expo build:android --release-channel <your-channel>` builds an APK in the alpha release channel. Similarly for `expo build:ios --release-channel <your-channel>`.
+  * Valid channels are `alpha`, `beta`, or none (i.e. `default`, our production channel).
+* Expo apps can receive over-the-air updates so we unless we changed the SDK version, we don't need to submit changes to the App Store/Play Store. To publish changes run `expo publish --release-channel <your-channel>`.
+* See more in the [Expo docs on release channels](https://docs.expo.io/versions/latest/distribution/release-channels/).
 
 ## ⚙️ Frameworks
 * [Expo](https://expo.io)

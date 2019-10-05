@@ -41,7 +41,7 @@ export class MockNavigator extends React.Component<IMockAppProps> {
   public componentDidMount() {
     NavigationService.setTopLevelNavigator(this.navigator);
 
-    this.subscribers.forEach(subscriber =>
+    this.subscribers.forEach((subscriber: any) =>
       subscriber({
         type: "action",
         action: NavigationActions.init({ params: this.props.navigationParams }),
@@ -77,7 +77,7 @@ export class MockNavigator extends React.Component<IMockAppProps> {
     const newState = this.navigator.router.getStateForAction(action, lastState);
 
     const dispatchEvents = () => {
-      this.subscribers.forEach(subscriber =>
+      this.subscribers.forEach((subscriber: any) =>
         subscriber({
           type: "action",
           action,

@@ -15,7 +15,7 @@ export interface IScreenWrapperProps extends IScreenLayoutProps {
 /**
  * Story decorator to inject in all the required context
  */
-export function screenWrapper({ navigationOptions, ...layoutProps }: IScreenWrapperProps = {}): StoryDecorator {
+export function screenWrapper({ navigationOptions, mocks, ...layoutProps }: IScreenWrapperProps = {}): StoryDecorator {
   return (story, params) => {
     class Screen extends React.Component {
       public static navigationOptions = {
@@ -29,7 +29,7 @@ export function screenWrapper({ navigationOptions, ...layoutProps }: IScreenWrap
     }
 
     return (
-      <GraphQLMockProvider>
+      <GraphQLMockProvider mocks={mocks}>
         <ScreenLayout {...layoutProps}>
           <ActionSheetProvider>
             <MockNavigator screen={Screen} />
@@ -100,8 +100,7 @@ function ScreenLayout({ children, backgroundColor = "white" }: IScreenLayoutProp
           left: 28,
           top: 105,
           height: 667,
-          width: 375,
-          border: "1px solid lightgrey"
+          width: 375
         }}
       >
         {children}

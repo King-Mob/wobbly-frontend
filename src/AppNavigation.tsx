@@ -3,11 +3,13 @@ import * as React from "react";
 import {
   createAppContainer,
   createBottomTabNavigator,
+  createDrawerNavigator,
   createStackNavigator,
   createSwitchNavigator,
   NavigationInjectedProps
 } from "react-navigation";
 
+import { DrawerNav } from "./components/organisms";
 import {
   AccountScreen,
   CreateGroupScreen,
@@ -15,7 +17,6 @@ import {
   EditGroupDescriptionModal,
   EditGroupNameModal,
   GroupDetailsScreen,
-  GroupsListScreen,
   JoinGroupScreen,
   LoginScreen,
   SearchGroupsModal,
@@ -27,43 +28,58 @@ import {
 } from "./components/screens";
 import SettingsScreen from "./components/screens/SettingsScreen";
 
-// Main app stacks
-const GroupsStack = createStackNavigator({
-  GroupsList: GroupsListScreen,
+// Stack with a list of threads in a group. Can go one level deeper into a specific thread.
+const ThreadsStack = createStackNavigator({
   ThreadsList: ThreadsListScreen,
-  Thread: ThreadScreen,
-  GroupDetails: GroupDetailsScreen
+  Thread: ThreadScreen
 });
-GroupsStack.navigationOptions = ({ navigation }: NavigationInjectedProps) => {
+ThreadsStack.navigationOptions = ({ navigation }: NavigationInjectedProps) => {
   const tabBarVisible = navigation.state.index === 0;
   return { tabBarVisible };
 };
+
+const GroupDetailsStack = createStackNavigator({
+  Details: GroupDetailsScreen
+});
+
+// Account and settings
 const AccountStack = createStackNavigator({
   Account: AccountScreen,
   Settings: SettingsScreen
 });
 
-// Main app tabs
-const AppTabs = createBottomTabNavigator(
+// The tabs for a single group
+const GroupTabs = createBottomTabNavigator(
   {
-    Groups: GroupsStack,
-    Account: AccountStack
+    Threads: ThreadsStack,
+    Details: GroupDetailsStack
   },
   {
-    initialRouteName: "Groups",
+    initialRouteName: "Threads",
     defaultNavigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ tintColor }) => {
         const routeName = navigation.state.routeName;
         const IconComponent = Ionicons;
         let iconName;
-        if (routeName === "Groups") {
+        if (routeName === "Threads") {
           iconName = "ios-chatboxes";
-        } else if (routeName === "Account") {
-          iconName = "ios-contact";
+        } else if (routeName === "Details") {
+          iconName = "ios-information-circle-outline";
         }
         return <IconComponent name={iconName || ""} size={25} color={tintColor || undefined} />;
       }
     })
+  }
+);
+
+// Drawer navigation (to select group)
+const GroupsDrawer = createDrawerNavigator(
+  {
+    Group: GroupTabs
+  },
+  {
+    contentComponent: DrawerNav,
+    drawerType: "back"
   }
 );
 
@@ -99,11 +115,12 @@ const EditGroupDescriptionStack = createStackNavigator({
 // Put modals here (as long as they only need to be accessible from within `AppTabs`)
 const RootNavigator = createStackNavigator(
   {
-    AppTabs,
+    GroupsDrawer,
     CreateNodeFlow,
     CreateThreadFlow,
     EditGroupNameStack,
-    EditGroupDescriptionStack
+    EditGroupDescriptionStack,
+    AccountStack
   },
   {
     mode: "modal",

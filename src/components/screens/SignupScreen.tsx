@@ -1,11 +1,15 @@
 import { Formik, FormikProps } from "formik";
+import hoistNonReactStatics from "hoist-non-react-statics";
 import { get, values } from "lodash";
 import * as React from "react";
 import { KeyboardAvoidingView, StyleSheet, View } from "react-native";
+import SentryExpo from "sentry-expo";
 import * as yup from "yup";
 
+import { GENERIC_ERROR_TEXT } from "../../constants";
 import { SIGNUP_MUTATION, SignupMutation, SignupMutationFn, SignupMutationResult } from "../../graphql/mutations";
-import { createNavigatorFunction, saveTokenAndRedirect } from "../../util";
+import { NavigationService } from "../../services";
+import { createNavigatorFunction, registerForPushNotificationsAsync, saveAuthTokenAsync } from "../../util";
 import { FormErrors, FormField, WobblyButton } from "../atoms";
 import { Intent } from "../atoms/WobblyButton";
 import WobblyText from "../atoms/WobblyText";
@@ -17,20 +21,16 @@ interface ISignupFormFields {
   passwordConfirmation: string;
 }
 
-interface ISignupFormProps {
+interface ISignupScreenProps {
   signup: SignupMutationFn;
   result: SignupMutationResult;
 }
 
-class SignupForm extends React.PureComponent<ISignupFormProps> {
+class SignupScreen extends React.Component<ISignupScreenProps> {
+  public static navigationOptions = {
+    header: null
+  };
   private signupForm?: Formik<ISignupFormFields> | null;
-
-  public componentDidUpdate() {
-    const { data } = this.props.result;
-    if (data && data.signup.token) {
-      saveTokenAndRedirect(data.signup.token);
-    }
-  }
 
   public render() {
     const isSigningUp = this.props.result && this.props.result.loading;
@@ -123,8 +123,25 @@ class SignupForm extends React.PureComponent<ISignupFormProps> {
           name: vals.displayName
         }
       })
+      .then(result => {
+        const token = get(result, "data.signup.token", undefined);
+        if (!token) {
+          throw new Error("Did not receive auth token");
+        }
+        return saveAuthTokenAsync(token);
+      })
+      .then(() => {
+        return registerForPushNotificationsAsync();
+      })
+      .then(() => {
+        NavigationService.navigate("GroupsList");
+      })
       .catch(e => {
-        const error = get(e, "graphQLErrors[0].message", "An error occurred");
+        let error = get(e, "graphQLErrors[0].message");
+        if (!error) {
+          error = GENERIC_ERROR_TEXT;
+          SentryExpo.captureException(e);
+        }
         this.signupForm!.setErrors({ email: error });
       });
   };
@@ -142,8 +159,10 @@ const styles = StyleSheet.create({
   }
 });
 
-export default () => (
+const EnhancedComponent = () => (
   <SignupMutation mutation={SIGNUP_MUTATION}>
-    {(signup, result) => <SignupForm signup={signup} result={result} />}
+    {(signup, result) => <SignupScreen signup={signup} result={result} />}
   </SignupMutation>
 );
+
+export default hoistNonReactStatics(EnhancedComponent, SignupScreen);

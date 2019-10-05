@@ -35,7 +35,7 @@ interface IPost {
   id: string;
   author: IPerson;
   content: string;
-  createdAt: Date;
+  createdAt: number | Date;
 }
 export const somePost = (i?: number): IPost => {
   const message = someGiftedMessage(i);

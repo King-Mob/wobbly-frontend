@@ -23,6 +23,12 @@ export const GROUPS_QUERY = gql`
   }
 `;
 
+export const CURRENT_GROUP_ID_QUERY = gql`
+  query getCurrentGroupId {
+    currentGroupId @client
+  }
+`;
+
 export const SEARCH_GROUPS_QUERY = gql`
   query searchGroups($searchQuery: String!) {
     searchGroups(searchQuery: $searchQuery) {

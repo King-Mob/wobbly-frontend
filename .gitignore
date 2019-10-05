@@ -6,6 +6,9 @@ src/generated/
 # expo
 .expo/
 
+# vscode debug cache
+.vscode/.react/
+
 # dependencies
 /node_modules
 
@@ -319,3 +322,4 @@ storybook-static
 .storybook/schema.json
 .loki/current
 .loki/difference
+app.json

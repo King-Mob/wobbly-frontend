@@ -1,17 +1,17 @@
+import { Constants } from "expo";
 import { NativeModules } from "react-native";
 import url from "url";
 
-const configs = {
-  local: {
-    backendUrl: getPackagerBaseUrl() + ":4000"
-  },
-  develop: {
-    backendUrl: "http://develop.wobbly.app"
-  }
+export const config = {
+  // default values unless overridden by app.json
+  backendUrl: getPackagerBaseUrl() + ":4000",
+  sentryDsn: "",
+
+  // values specified in expo.extra field of app.json
+  ...Constants.manifest.extra
 };
 
-export const config = __DEV__ ? configs.local : configs.develop;
-
+/** Get base url of rn-packager */
 function getPackagerBaseUrl() {
   if (!NativeModules.SourceCode || !NativeModules.SourceCode.scriptURL) {
     return "";
@@ -19,4 +19,9 @@ function getPackagerBaseUrl() {
 
   const scriptURL = url.parse(NativeModules.SourceCode.scriptURL);
   return scriptURL.protocol + "//" + scriptURL.hostname;
+}
+
+if (__DEV__) {
+  // tslint:disable-next-line:no-console
+  console.log(`*** Running using profile: ${Constants.manifest.slug} ***`);
 }

@@ -99,3 +99,19 @@ export const CONFIRM_EMAIL_MUTATION = gql`
     }
   }
 `;
+
+export const ADD_PUSH_TOKEN = gql`
+  mutation addPushToken($token: String!) {
+    addPushToken(token: $token) {
+      id
+    }
+  }
+`;
+
+export const DELETE_PUSH_TOKEN = gql`
+  mutation deletePushToken($token: String!) {
+    deletePushToken(token: $token) {
+      id
+    }
+  }
+`;

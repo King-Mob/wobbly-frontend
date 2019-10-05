@@ -1,6 +1,14 @@
 const path = require("path");
+const webpack = require("webpack");
 
-module.exports = (baseConfig, env, config) => {
+module.exports = async ({ config }) => {
+  // Set globals
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      __DEV__: true // webpack is only used to build tests, so this should always be true
+    })
+  );
+
   config.module.rules.push(
     // compile
     {
@@ -33,18 +41,19 @@ module.exports = (baseConfig, env, config) => {
 
   config.resolve.extensions.unshift(".web.js", ".ts", ".tsx");
 
-  // Aials incompatible modules with either a react-native-web compatible shim,
+  // Alias incompatible modules with either a react-native-web compatible shim,
   // or a stub module where none exists
   config.resolve.alias = {
     ...(config.resolve && config.resolve.alias),
     expo: require.resolve("expo-web"),
     "@expo/vector-icons": require.resolve("expo-web"),
-    "react-native": require.resolve("react-native-web"),
+    "react-native": require.resolve("./stubs/react-native.tsx"),
     // referenced from expo-web's icon stub, but doesn't seem to exist
     "react-native-vector-icons/AntDesign": require.resolve("./stubs/empty-module.ts"),
     "react-native-svg": require.resolve("react-native-svg-web"),
     "react-native-video": require.resolve("./stubs/react-native-video.tsx"),
-    "react-navigation": require.resolve("@react-navigation/core")
+    "react-navigation": require.resolve("@react-navigation/core"),
+    "sentry-expo": require.resolve("./stubs/empty-module.ts")
   };
 
   return config;

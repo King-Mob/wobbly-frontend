@@ -10,14 +10,16 @@ import { colors } from "../../style/common";
 import { createNavigatorFunction } from "../../util";
 import WobblyText from "../atoms/WobblyText";
 import { CreateGroupFooter, SearchBar } from "../molecules";
-import { GroupsList, LoadingState } from "../organisms";
+import { ErrorState, GroupsList, LoadingState } from "../organisms";
 
 interface ISearchGroupsModalProps extends WithApolloClient<{}> {}
 interface ISearchGroupsModalState {
-  results?: searchGroups_searchGroups[];
+  results?: SearchResult;
   loading: boolean;
   query: string;
 }
+
+type SearchResult = { status: "error"; error: Error } | { status: "ok"; groups: searchGroups_searchGroups[] };
 
 class SearchGroupsModal extends React.PureComponent<ISearchGroupsModalProps, ISearchGroupsModalState> {
   public static navigationOptions = () => {
@@ -35,33 +37,49 @@ class SearchGroupsModal extends React.PureComponent<ISearchGroupsModalProps, ISe
   }
 
   public render() {
-    let content: JSX.Element | undefined;
-    let footer: JSX.Element | undefined;
-    const { loading, results } = this.state;
-    if (loading) {
-      content = <LoadingState />;
-    } else if (results && results.length > 0) {
-      // TODO: fix `as any` type hack below
-      content = <GroupsList groups={results} onPressFactory={this.onPressFactory as any} />;
-    } else if (results !== undefined && results.length === 0) {
-      content = (
-        <View style={style.noResultsWrapper}>
-          <WobblyText style={style.noResultsText}>No results</WobblyText>
-        </View>
-      );
-    }
-
-    if (results) {
-      footer = <CreateGroupFooter onButtonPress={SearchGroupsModal.navigateToCreateGroup} />;
-    }
-
     return (
       <View style={style.container}>
         <SearchBar placeholder="Search for a group..." onSubmit={this.handleSearch} />
-        {content}
-        {footer}
+        {this.renderContent()}
+        {this.renderFooter()}
       </View>
     );
+  }
+
+  private renderContent() {
+    const { results, loading } = this.state;
+
+    if (loading) {
+      return <LoadingState />;
+    }
+
+    if (results && results.status === "error") {
+      return <ErrorState />;
+    }
+
+    if (results && results.status === "ok") {
+      if (results.groups.length === 0) {
+        return (
+          <View style={style.noResultsWrapper}>
+            <WobblyText style={style.noResultsText}>No results</WobblyText>
+          </View>
+        );
+      }
+
+      return <GroupsList groups={results.groups} onPressFactory={this.onPressFactory as any} />;
+    }
+
+    return null;
+  }
+
+  private renderFooter() {
+    const { results } = this.state;
+
+    if (results) {
+      return <CreateGroupFooter onButtonPress={SearchGroupsModal.navigateToCreateGroup} />;
+    }
+
+    return null;
   }
 
   private handleSearch = (searchQuery: string) => {
@@ -76,15 +94,27 @@ class SearchGroupsModal extends React.PureComponent<ISearchGroupsModalProps, ISe
           return;
         }
         this.setState({
-          results: response.data.searchGroups
-            .filter(group => group && group.name && group.id)
-            .map(group => ({
-              __typename: "GroupSearchResponse" as "GroupSearchResponse",
-              name: group!.name,
-              id: group!.id,
-              description: group!.description
-            })),
+          results: {
+            status: "ok",
+            groups: response.data.searchGroups
+              .filter(group => group && group.name && group.id)
+              .map(group => ({
+                __typename: "GroupSearchResponse" as "GroupSearchResponse",
+                name: group!.name,
+                id: group!.id,
+                description: group!.description
+              }))
+          },
           loading: false
+        });
+      })
+      .catch(error => {
+        this.setState({
+          loading: false,
+          results: {
+            status: "error",
+            error
+          }
         });
       });
   };

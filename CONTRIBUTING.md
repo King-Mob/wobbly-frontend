@@ -3,6 +3,7 @@
 ## Table of Contents
 
 * [Ways to Contribute](#ways-to-contribute)
+* [Pull requests](#pull-requests)
 * [Using Github](#using-github)
 * [Recognizing all contributors](#recognizing-all-contributors)
 * [Read our Code of Conduct](CODE-OF-CONDUCT.md)
@@ -20,6 +21,10 @@
 * Fix bugs or build new features
   * Please identify what you would like to work on in Github Issues first (so as to prevent duplication of effort)
 * Please use the app, and provide us feedback!
+
+## Pull requests
+* All status checks must pass before a PR can be merged.
+* Every PR requires a new entry in `CHANGELOG.md`. If your change is very small and you don't think a changelog entry is necessary, simply use the string `#trivial` in your PR title or body -- then you'll override this check.
 
 ## Using Github
 

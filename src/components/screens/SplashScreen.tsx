@@ -1,37 +1,74 @@
-import { SecureStore } from "expo";
+import { Font, SecureStore } from "expo";
+import jwtDecode from "jwt-decode";
 import * as React from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
-import { NavigationInjectedProps } from "react-navigation";
+import SentryExpo from "sentry-expo";
 
-import { colors } from "../../style/common";
+import { client } from "../../apolloClient";
+import { config } from "../../config";
+import { fonts } from "../../fonts";
+import { getGroups } from "../../generated/getGroups";
+import { GROUPS_QUERY } from "../../graphql/queries";
+import { NavigationService } from "../../services";
+import WobblyText from "../atoms/WobblyText";
 
-type ISplashScreenProps = Partial<NavigationInjectedProps>;
+interface ISplashScreenState {
+  hasInitialized: boolean;
+}
 
 /**
- * react-navigation opens this as the default screen but immediately redirects to the Auth or App stack,
+ * react-navigation opens this as the default screen but redirects to the Auth or App stack,
  * depending on whether the user is authenticated or not.
  */
-class SplashScreen extends React.PureComponent<ISplashScreenProps> {
-  public constructor(props: ISplashScreenProps) {
+class SplashScreen extends React.PureComponent<{}, ISplashScreenState> {
+  public constructor(props: {}) {
     super(props);
-    this.bootstrap();
+    this.state = { hasInitialized: false };
+  }
+
+  public async componentDidMount() {
+    await this.initSentry();
+    await Font.loadAsync(fonts);
+    this.setState({ hasInitialized: true });
+    this.navigateToAppOrAuth();
   }
 
   public render() {
-    return <SafeAreaView style={style.wrapper} />;
+    return (
+      <SafeAreaView style={style.wrapper}>
+        {this.state.hasInitialized && <WobblyText>Loading...</WobblyText>}
+      </SafeAreaView>
+    );
   }
 
-  private bootstrap = async () => {
-    const { navigation } = this.props;
-    if (!navigation || !SecureStore) {
+  private navigateToAppOrAuth = async () => {
+    // https://reactnavigation.org/docs/en/auth-flow.html
+    const token = await SecureStore.getItemAsync("token");
+    if (token) {
+      // We're logged in. Load a list of the person's groups before showing them the app. Also set the current group
+      // to the first one.
+      const groups = await client.query<getGroups>({ query: GROUPS_QUERY });
+      // TODO: what if there are none?
+      await client.writeData({ data: { currentGroupId: groups.data.groups![0].id } });
+      NavigationService.navigate("App");
+    } else {
+      NavigationService.navigate("Auth");
+    }
+  };
+
+  private async initSentry() {
+    if (!config.sentryDsn) {
       return;
     }
-    const token = await SecureStore.getItemAsync("token");
-    // This will switch to the App screen or Auth screen and this loading
-    // screen will be unmounted and thrown away.
-    // https://reactnavigation.org/docs/en/auth-flow.html
-    navigation.navigate(token ? "App" : "Auth");
-  };
+    // SentryExpo.enableInExpoDevelopment = true;
+    SentryExpo.config(config.sentryDsn).install();
+    const authToken = await SecureStore.getItemAsync("token");
+    if (!authToken) {
+      return;
+    }
+    const decodedJwt = jwtDecode<{ personId: string }>(authToken);
+    SentryExpo.setUserContext({ id: decodedJwt.personId });
+  }
 }
 
 export default SplashScreen;
@@ -41,6 +78,6 @@ const style = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.red1
+    backgroundColor: "#ed2826"
   }
 });

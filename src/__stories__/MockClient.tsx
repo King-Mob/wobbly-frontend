@@ -1,12 +1,12 @@
 import { InMemoryCache } from "apollo-cache-inmemory";
-import ApolloClient from "apollo-client";
+import ApolloClient, { Resolvers } from "apollo-client";
 import { SchemaLink } from "apollo-link-schema";
 import { buildClientSchema, printSchema } from "graphql";
 import { addMockFunctionsToSchema, makeExecutableSchema } from "graphql-tools";
 import React from "react";
 import { ApolloProvider } from "react-apollo";
 
-import { someDateTime, someGroup, somePerson, somePost, someThread } from "./testData";
+import { someDateTime, someGroup, somePerson, somePost, someSequence, someThread } from "./testData";
 
 interface IGraphQLMockProviderProps {
   mocks?: any;
@@ -21,21 +21,32 @@ export function GraphQLMockProvider({ mocks, children }: IGraphQLMockProviderPro
   addMockFunctionsToSchema({
     schema,
     mocks: {
-      ...mocks,
       Person: () => somePerson(),
       Group: () => someGroup(),
       GroupSearchResponse: () => someGroup(),
       Thread: () => someThread(),
       DateTime: () => someDateTime(),
-      Post: () => somePost()
+      Post: () => somePost(),
+      Query: () => ({
+        groups: () => someSequence(2, someGroup),
+        threads: () => someSequence(5, someThread)
+      }),
+      ...mocks
     }
   });
+
+  const localMockResolvers: Resolvers = {
+    Query: {
+      currentGroupId: () => someGroup().id
+    }
+  };
 
   const client = new ApolloClient({
     cache: new InMemoryCache(),
     link: new SchemaLink({
       schema
-    })
+    }),
+    resolvers: localMockResolvers
   });
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
